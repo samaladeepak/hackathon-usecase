@@ -1,0 +1,65 @@
+name: Terraform GCP Infrastructure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/terraform-gcp.yaml'
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    name: Terraform Apply on GCP
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: demo-gcp-project-id
+      REGION: us-central1
+      ZONE: us-central1-a
+      TF_STATE_BUCKET: demo-terraform-state-bucket
+      GKE_CLUSTER_NAME: demo-gke-cluster
+
+    steps:
+      # 1. Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Setup Google Cloud SDK
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      # 3. Install Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.6.0
+
+      # 4. Initialize Terraform backend (GCS bucket for remote state)
+      - name: Terraform Init
+        working-directory: terraform
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ env.TF_STATE_BUCKET }}" \
+            -backend-config="prefix=terraform/state" \
+            -backend-config="credentials=${{ secrets.GCP_SA_KEY }}"
+
+      # 5. Terraform Format & Validate
+      - name: Terraform Format & Validate
+        working-directory: terraform
+        run: |
+          terraform fmt -check
+          terraform validate
+
+      # 6. Terraform Plan
+      - name: Terraform Plan
+        working-directory: terraform
+        run: terraform plan -out=tfplan -input=false
+
+      # 7. Terraform Apply
+      - name: Terraform Apply
+        working-directory: terraform
+        run: terraform apply -input=false -auto-approve tfplan
