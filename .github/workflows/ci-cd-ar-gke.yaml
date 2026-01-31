@@ -4,18 +4,20 @@ on:
   push:
     branches:
       - main
+    paths:
+      - '.github/workflows/ci-cd-ar-gke.yaml'
   workflow_dispatch:
 
 env:
   PROJECT_ID: qwiklabs-gcp-03-7e692432f164
-  REGION: us-central1
+  REGION: us-centra1
   REPOSITORY: demo-ar
   IMAGE1_NAME: application-service
   IMAGE2_NAME: patient-service
   # HELM_RELEASE: patient-release
   # HELM_CHART_PATH: ./helm/patient 
-  GKE_CLUSTER: my-cluster
-  GKE_ZONE: us-west1
+  GKE_CLUSTER: autopilot-cluster-1
+  GKE_ZONE: us-central1
   GKE_NAMESPACE: default
   DEPLOYMENT_NAME: application-service
 
@@ -61,17 +63,6 @@ jobs:
           ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE1_NAME }}:latest
           ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE1_NAME }}:${{ steps.vars.outputs.TAG }}
 
-    # - name: Build and Push Docker Image
-    #   uses: docker/build-push-action@v6
-    #   with:
-    #     context: ./patient-service
-    #     file: ./patient-service/Dockerfile
-    #     push: true
-    #     tags: |
-    #       ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE2_NAME }}:latest
-    #       ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE2_NAME }}:${{ steps.vars.outputs.TAG }}
-  
-    # 7️⃣ Get GKE credentials
     - name: Get GKE credentials
       uses: google-github-actions/get-gke-credentials@v2
       with:
@@ -82,12 +73,7 @@ jobs:
     # 8️⃣ Deploy to GKE
     - name: Deploy to GKE
       run: |
-        kubectl create deployment ${{ env.DEPLOYMENT1_NAME }} \
+        kubectl create deployment ${{ env.DEPLOYMENT_NAME }} \
           --image=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE1_NAME }}:${{ github.sha }} \
           -n ${{ env.GKE_NAMESPACE }}
-    # - name: Deploy to GKE
-    #   run: |
-    #     kubectl create deployment ${{ env.DEPLOYMENT2_NAME }} \
-    #       --image=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE2_NAME }}:${{ github.sha }} \
-    #       -n ${{ env.GKE_NAMESPACE }}
 
