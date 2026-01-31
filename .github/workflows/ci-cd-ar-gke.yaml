@@ -61,7 +61,7 @@ jobs:
           ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE1_NAME }}:latest
           ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE1_NAME }}:${{ steps.vars.outputs.TAG }}
 
-    # - name: Build and Push Docker Image
+    - name: Build and Push Docker Image
       uses: docker/build-push-action@v6
       with:
         context: ./patient-service
