@@ -10,7 +10,7 @@ on:
 
 env:
   PROJECT_ID: qwiklabs-gcp-03-7e692432f164
-  REGION: us-centra1
+  REGION: us-central1
   REPOSITORY: demo-ar
   IMAGE1_NAME: application-service
   IMAGE2_NAME: patient-service
