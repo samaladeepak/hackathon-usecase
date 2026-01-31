@@ -1,0 +1,48 @@
+name: CI-CD-AR-GKE
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - '.github/workflows/ci-cd-ar-gke.yaml'
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: my-project-id
+  REGION: us-west1
+  REPOSITORY: demo-ar
+  IMAGE1_NAME: application-service
+  IMAGE2_NAME: patient-service
+  # HELM_RELEASE: patient-release
+  # HELM_CHART_PATH: ./helm/patient 
+  GKE_CLUSTER: my-demo-cluster
+  GKE_ZONE: us-west1
+  GKE_NAMESPACE: default
+  DEPLOYMENT1_NAME: appointment-service
+  DEPLOYMENT2_NAME: patient-service
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout source code
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Authenticate to GCP using Service Account Key
+    - name: Authenticate to GCP
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    # Setup gcloud
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ env.PROJECT_ID }}
+
+    # Configure Docker for Artifact Registry
+    - name: Configure Docker
+      run: |
+        gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
