@@ -90,3 +90,4 @@ jobs:
         kubectl create deployment ${{ env.DEPLOYMENT2_NAME }} \
           --image=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE2_NAME }}:${{ github.sha }} \
           -n ${{ env.GKE_NAMESPACE }}
+          
