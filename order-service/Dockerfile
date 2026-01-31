@@ -1,14 +1,18 @@
-# Use an official OpenJDK runtime as a parent image
-FROM eclipse-temurin:17-jdk-alpine
+FROM maven:3.9.3-eclipse-temurin-17
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the JAR file into the container
+# 1️⃣ Copy only pom.xml first
+COPY pom.xml .
+
+# 2️⃣ Download dependencies (caches them if pom.xml didn't change)
+RUN mvn dependency:go-offline
+
+# 3️⃣ Copy the source code
 COPY src ./src
 
-# Expose a port if your application listens on one (optional)
-EXPOSE 8080
+# 4️⃣ Build the project
+RUN mvn clean package -DskipTests
 
-# Command to run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# 5️⃣ Run the JAR
+CMD ["java", "-jar", "app.jar"]
