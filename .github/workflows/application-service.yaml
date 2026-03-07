@@ -41,3 +41,4 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/application-service-image:latest
             ${{ secrets.DOCKER_USERNAME }}/application-service-image:${{ steps.vars.outputs.TAG }}
             
+            
