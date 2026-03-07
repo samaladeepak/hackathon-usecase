@@ -4,5 +4,6 @@ terraform {
     prefix      = "terraform/state"     # Path inside the bucket to store state
     location    = var.region           # GCP region of the bucket
     credentials = var.gcp_credentials_file # Optional: path to service account JSON
+    
   }
 }

@@ -86,3 +86,4 @@ variable "node_preemptible" {
   description = "Whether GKE nodes are preemptible (cheaper, short-lived)."
   default     = false
 }
+
