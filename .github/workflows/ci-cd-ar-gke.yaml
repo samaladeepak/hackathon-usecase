@@ -9,15 +9,15 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_ID: qwiklabs-gcp-03-7e692432f164
-  REGION: us-central1
+  PROJECT_ID: qwiklabs-gcp-00-63ab8fe16ef3
+  REGION: europe-west4
   REPOSITORY: demo-ar
   IMAGE1_NAME: application-service
   IMAGE2_NAME: patient-service
   # HELM_RELEASE: patient-release
   # HELM_CHART_PATH: ./helm/patient 
   GKE_CLUSTER: autopilot-cluster-1
-  GKE_ZONE: us-central1
+  GKE_ZONE: europe-west4
   GKE_NAMESPACE: default
   DEPLOYMENT_NAME: application-service
 
@@ -47,12 +47,12 @@ jobs:
       run: |
         gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
-    # Step 4: Set image tag (same as before)
+    # Set image tag (same as before)
     - name: Set image tags
       id: vars
       run: echo "TAG=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
 
-# Step 5: Build and push Docker image to Artifact Registry
+    # Build and push Docker image to Artifact Registry
     - name: Build and Push Docker Image
       uses: docker/build-push-action@v6
       with:
@@ -70,7 +70,7 @@ jobs:
         location: ${{ env.GKE_ZONE }}
         project_id: ${{ env.PROJECT_ID }}
 
-    # 8️⃣ Deploy to GKE
+    # Deploy to GKE
     - name: Deploy to GKE
       run: |
         kubectl create deployment ${{ env.DEPLOYMENT_NAME }} \
